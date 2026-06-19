@@ -1,0 +1,305 @@
+{
+  "uid": "greenhouse-main",
+  "title": "🌿 IoT Greenhouse",
+  "description": "Real-time sensor telemetry and anomaly alerts from the greenhouse monitoring system.",
+  "tags": ["greenhouse", "iot", "mqtt"],
+  "timezone": "browser",
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "🌡️ Temperature",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "celsius",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "showPoints": "never"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 15 },
+              { "color": "yellow", "value": 28 },
+              { "color": "red", "value": 35 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb" },
+          "refId": "A",
+          "query": "from(bucket: \"greenhouse\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"greenhouse_sensors\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "💧 Humidity",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "percent",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb" },
+          "refId": "A",
+          "query": "from(bucket: \"greenhouse\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"greenhouse_sensors\")\n  |> filter(fn: (r) => r[\"_field\"] == \"humidity\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "🔵 Atmospheric Pressure",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "pressurehpa",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb" },
+          "refId": "A",
+          "query": "from(bucket: \"greenhouse\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"greenhouse_sensors\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pressure\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "📡 RSSI (Signal Strength)",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "dBm",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": -80 },
+              { "color": "green", "value": -60 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb" },
+          "refId": "A",
+          "query": "from(bucket: \"greenhouse\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"greenhouse_sensors\")\n  |> filter(fn: (r) => r[\"_field\"] == \"rssi\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "🌡️ Current Temperature",
+      "type": "gauge",
+      "gridPos": { "x": 0, "y": 16, "w": 6, "h": 6 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "min": 0,
+          "max": 50,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 15 },
+              { "color": "yellow", "value": 28 },
+              { "color": "red", "value": 35 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "showThresholdLabels": false, "showThresholdMarkers": true },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb" },
+          "refId": "A",
+          "query": "from(bucket: \"greenhouse\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"greenhouse_sensors\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature\")\n  |> last()"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "💧 Current Humidity",
+      "type": "gauge",
+      "gridPos": { "x": 6, "y": 16, "w": 6, "h": 6 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 30 },
+              { "color": "green", "value": 50 },
+              { "color": "yellow", "value": 80 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "showThresholdLabels": false, "showThresholdMarkers": true },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb" },
+          "refId": "A",
+          "query": "from(bucket: \"greenhouse\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"greenhouse_sensors\")\n  |> filter(fn: (r) => r[\"_field\"] == \"humidity\")\n  |> last()"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "⚠️ Total Anomaly Alerts",
+      "type": "stat",
+      "gridPos": { "x": 12, "y": 16, "w": 6, "h": 6 },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "red", "value": 20 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["count"] },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb" },
+          "refId": "A",
+          "query": "from(bucket: \"greenhouse\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"greenhouse_alerts\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> count()"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "📡 Current RSSI",
+      "type": "stat",
+      "gridPos": { "x": 18, "y": 16, "w": 6, "h": 6 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dBm",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": -80 },
+              { "color": "green", "value": -60 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb" },
+          "refId": "A",
+          "query": "from(bucket: \"greenhouse\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"greenhouse_sensors\")\n  |> filter(fn: (r) => r[\"_field\"] == \"rssi\")\n  |> last()"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "🚨 Anomaly Alert Log",
+      "type": "table",
+      "gridPos": { "x": 0, "y": 22, "w": 24, "h": 8 },
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "auto", "filterable": true } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "_time" }, "properties": [{ "id": "displayName", "value": "Time" }, { "id": "custom.width", "value": 200 }] },
+          { "matcher": { "id": "byName", "options": "node" }, "properties": [{ "id": "displayName", "value": "Node" }, { "id": "custom.width", "value": 100 }] },
+          { "matcher": { "id": "byName", "options": "metric" }, "properties": [{ "id": "displayName", "value": "Metric" }, { "id": "custom.width", "value": 120 }] },
+          { "matcher": { "id": "byName", "options": "value" }, "properties": [{ "id": "displayName", "value": "Anomalous Value" }, { "id": "custom.width", "value": 150 }] },
+          { "matcher": { "id": "byName", "options": "mean" }, "properties": [{ "id": "displayName", "value": "Rolling Mean" }, { "id": "custom.width", "value": 130 }] },
+          { "matcher": { "id": "byName", "options": "std" }, "properties": [{ "id": "displayName", "value": "Std Dev" }, { "id": "custom.width", "value": 100 }] },
+          { "matcher": { "id": "byName", "options": "message" }, "properties": [{ "id": "displayName", "value": "Message" }] }
+        ]
+      },
+      "options": {
+        "sortBy": [{ "desc": true, "displayName": "Time" }],
+        "footer": { "show": false }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb" },
+          "refId": "A",
+          "query": "from(bucket: \"greenhouse\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"greenhouse_alerts\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"node\", \"metric\", \"value\", \"mean\", \"std\", \"message\"])\n  |> sort(columns: [\"_time\"], desc: true)"
+        }
+      ]
+    }
+  ]
+}
