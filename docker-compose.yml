@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   influxdb:
     image: influxdb:2.7
@@ -22,6 +20,20 @@ services:
       context: ./raspberrypi
       dockerfile: Dockerfile
     container_name: mqtt_subscriber
+    restart: unless-stopped
+    depends_on:
+      - influxdb
+    env_file:
+      - ./raspberrypi/.env
+    environment:
+      - INFLUXDB_URL=http://influxdb:8086
+
+  detector:
+    build:
+      context: ./raspberrypi
+      dockerfile: Dockerfile
+    command: ["python", "-u", "detector.py"]
+    container_name: mqtt_detector
     restart: unless-stopped
     depends_on:
       - influxdb
