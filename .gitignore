@@ -1,2 +1,3 @@
 # WiFi secrets
 esp32/secrets.h
+*.env
