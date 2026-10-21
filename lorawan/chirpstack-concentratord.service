@@ -1,0 +1,11 @@
+[Unit]
+Description=ChirpStack Concentratord (SX1302)
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/chirpstack-concentratord-sx1302 -c /etc/chirpstack-concentratord/concentratord.toml
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

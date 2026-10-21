@@ -1,0 +1,13 @@
+[mqtt]
+  # Must match the region ID enabled in ChirpStack (us915_1 = channels 8-15).
+  topic_prefix="us915_1"
+  server="tcp://127.0.0.1:1883"
+  username=""
+  password=""
+
+[backend]
+  enabled="concentratord"
+
+  [backend.concentratord]
+    event_url="ipc:///tmp/concentratord_event"
+    command_url="ipc:///tmp/concentratord_command"
